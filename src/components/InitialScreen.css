@@ -128,7 +128,7 @@
 .chat-area {
   width: 1000px;
   height: calc(700px - 85px);
-  /* adjust height to stay above input bar */
+  /* adjust height to stay above input b */
   flex-grow: 0;
   padding: 15px;
   margin-bottom: 50px;

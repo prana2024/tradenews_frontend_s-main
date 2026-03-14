@@ -1,90 +1,70 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import stockOptions from '../data/stockOptions';
-import Select from 'react-select';
-import './StockNewsAnalyzer.css';
+import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import Select from "react-select";
+import stockOptions from "../data/stockOptions";
+import "./StockAnalysis.css";
 
-const StockNewsAnalyzer = () => {
+const StockAnalysis = () => {
   const navigate = useNavigate();
   const [selectedStock, setSelectedStock] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [newsSummaries, setNewsSummaries] = useState([]);
+  const [analysisResult, setAnalysisResult] = useState(null);
   const wsRef = useRef(null);
 
   const startWebSocket = () => {
-    console.log("🔌 Attempting to connect WebSocket...");
-    wsRef.current = new WebSocket('ws://127.0.0.1:8000/ws/news/');
+    wsRef.current = new WebSocket("ws://127.0.0.1:8000/ws/stock-analysis/");
 
     wsRef.current.onopen = () => {
-      console.log('✅ WebSocket connected');
       if (selectedStock) {
         const symbol = selectedStock.value?.toUpperCase();
-        const keywords = selectedStock.keywords || [selectedStock.label];
-        if (!symbol) {
-          console.warn('⚠️ Missing stock symbol!');
-          return;
-        }
-        console.log('📤 Sending stock to backend:', { symbol, keywords });
-        wsRef.current.send(JSON.stringify({ action: 'start', symbol, keywords }));
-      } else {
-        console.warn('⚠️ No stock selected!');
+        console.log("Sending stock for analysis:", symbol);
+        wsRef.current.send(
+          JSON.stringify({
+            action: "analyze",
+            symbol: symbol,
+            prompt: "Analyze the stock performance, considering fundamentals, technicals, sentiment, and recent news.",
+          })
+        );
       }
     };
 
     wsRef.current.onmessage = (event) => {
-      console.log("📥 Message received from backend:", event.data);
-      const news = JSON.parse(event.data);
-      setNewsSummaries((prev) => [news.result, ...prev]);
+      const data = JSON.parse(event.data);
+      console.log("Received data:", data);
+      setAnalysisResult(data.result);
+      setLoading(false);
     };
 
-    wsRef.current.onerror = (error) => console.error('❌ WebSocket error:', error);
-    wsRef.current.onclose = () => console.log('🔌 WebSocket closed');
+    wsRef.current.onerror = (error) => console.error("WebSocket error:", error);
+    wsRef.current.onclose = () => console.log("WebSocket closed");
   };
 
   const handleAnalyze = () => {
     if (!selectedStock) {
-      console.warn("⚠️ No stock selected when Analyze was clicked");
+      alert("Please select a stock.");
       return;
     }
-    console.log("🔍 Analyze clicked for:", selectedStock.label);
     setLoading(true);
-
-    const initialDemoNews = {
-      headline: '🔍 Initial Analysis Started',
-      impact: 'Low',
-      direction: 'Sideways',
-      summary: 'Waiting for live news updates from backend...',
-      sentiment: 'neutral',
-      source: 'System',
-      time: new Date().toISOString(),
-      traderAdvice: {
-        ifInPosition: 'Please wait...',
-        ifNotInPosition: 'Please wait...',
-      },
-    };
-
-    setNewsSummaries([initialDemoNews]);
+    setAnalysisResult(null);
     startWebSocket();
   };
 
   const handleEndAnalysis = () => {
-    console.log("⛔ Ending analysis");
     setLoading(false);
-    setNewsSummaries([]);
-    if (wsRef.current) {
-      wsRef.current.close();
-      wsRef.current = null;
-    }
+    setAnalysisResult(null);
+    if (wsRef.current) wsRef.current.close();
   };
 
-  useEffect(() => {
-    return () => {
-      if (wsRef.current) wsRef.current.close();
-    };
-  }, []);
+  const renderValue = (value) => {
+    if (value === null || value === undefined) return "N/A";
+    if (typeof value === "object") {
+      return Object.entries(value).map(([k, v]) => `${k}: ${v}`).join(" | ");
+    }
+    return value;
+  };
 
   return (
-    <div className="center-wrapper">
+    <div className="stock-analysis">
       {/* Top Bar */}
       <div className="top-bar">
         <h1 className="brand-name">News2Trade</h1>
@@ -113,10 +93,7 @@ const StockNewsAnalyzer = () => {
     letter-spacing: 2px;
     text-shadow: 0 3px 8px rgba(0,0,0,0.8);
   }
-  .top-buttons {
-    display: flex;
-    gap: 20px;
-  }
+  .top-buttons { display: flex; gap: 20px; }
   .top-buttons button {
     padding: 10px 24px;
     border-radius: 8px;
@@ -134,128 +111,78 @@ const StockNewsAnalyzer = () => {
     box-shadow: 0 4px 12px rgba(0,0,0,0.7);
   }
   @media (max-width: 768px) {
-    .top-bar {
-      flex-direction: column;
-      align-items: flex-start;
-      padding: 16px 20px;
-    }
-    .top-buttons {
-      margin-top: 14px;
-      width: 100%;
-      justify-content: space-between;
-    }
-    .top-buttons button {
-      flex: 1;
-      text-align: center;
-    }
+    .top-bar { flex-direction: column; align-items: flex-start; padding: 16px 20px; }
+    .top-buttons { margin-top: 14px; width: 100%; justify-content: space-between; }
+    .top-buttons button { flex: 1; text-align: center; }
   }
 `}</style>
       </div>
 
-      <div className="analyzer-container">
-        <div className="header">
-          <h1 className="heading">
-            <span className="emoji">📊</span> AI News Analyzer
-          </h1>
-          {loading && (
-            <button className="end-btn" onClick={handleEndAnalysis}>
-              ❌ End Analysis
+      {/* Analysis Container */}
+      <div className="stock-analysis-page">
+        <div className="stock-analysis-container">
+          <h2>Stock Full Analysis</h2>
+
+          <div className="stock-selector-section">
+            <label>Select Stock:</label>
+            <Select
+              options={[
+                { label: "Stocks", options: stockOptions.stocks },
+                { label: "Crypto", options: stockOptions.crypto },
+                { label: "Indices", options: stockOptions.indices },
+              ]}
+              value={selectedStock}
+              onChange={setSelectedStock}
+              placeholder="Search and select..."
+              isDisabled={loading}
+              styles={{
+                control: (base) => ({ ...base, backgroundColor: "#111", borderColor: "#333", color: "#fff" }),
+                singleValue: (base) => ({ ...base, color: "#fff" }),
+                menu: (base) => ({ ...base, backgroundColor: "#111", color: "#fff" }),
+                option: (base, state) => ({
+                  ...base,
+                  backgroundColor: state.isFocused ? "#ff4d4d" : "#111",
+                  color: state.isFocused ? "#fff" : "#f9fafb",
+                }),
+                input: (base) => ({ ...base, color: "#fff" }),
+                placeholder: (base) => ({ ...base, color: "#bbb" }),
+              }}
+            />
+          </div>
+
+          <div className="stock-buttons-section">
+            <button onClick={handleAnalyze} disabled={loading}>
+              🔍 Analyze
             </button>
+            {loading && (
+              <button onClick={handleEndAnalysis} className="end-btn">
+                ❌ End Analysis
+              </button>
+            )}
+          </div>
+
+          {loading && <div className="loader">⏳ Analyzing stock trends...</div>}
+
+          {analysisResult && (
+            <div className="stock-analysis-result">
+              {typeof analysisResult === "string" ? (
+                <p>{analysisResult}</p>
+              ) : (
+                <>
+                  <p><strong>📊 Historical Summary:</strong> {renderValue(analysisResult.historicalSummary)}</p>
+                  <p><strong>📈 Current Sentiment:</strong> {renderValue(analysisResult.currentSentiment)}</p>
+                  <p><strong>🔢 Numeric Insights:</strong> {renderValue(analysisResult.numericInsights)}</p>
+                  <p><strong>🔮 Future Outlook:</strong> {renderValue(analysisResult.futureOutlook)}</p>
+                  <p><strong>💡 If In Position:</strong> {renderValue(analysisResult.traderAdvice?.ifInPosition)}</p>
+                  <p><strong>💡 If Not In Position:</strong> {renderValue(analysisResult.traderAdvice?.ifNotInPosition)}</p>
+                </>
+              )}
+            </div>
           )}
-        </div>
-
-        <div className="selector-section">
-          <label>Select Stock/Crypto/Index:</label>
-          <Select
-            options={[
-              { label: 'Stocks', options: stockOptions.stocks },
-              { label: 'Crypto', options: stockOptions.crypto },
-              { label: 'Indices', options: stockOptions.indices },
-            ]}
-            value={selectedStock}
-            onChange={setSelectedStock}
-            placeholder="Search and select..."
-            isDisabled={loading}
-            styles={{
-              control: (base, state) => ({
-                ...base,
-                backgroundColor: '#1e1e1e',
-                borderColor: state.isFocused ? '#ff4d4d' : '#333',
-                boxShadow: state.isFocused ? '0 0 0 1px #ff4d4d' : 'none',
-                color: '#fff',
-              }),
-              singleValue: (base) => ({ ...base, color: '#fff' }),
-              menu: (base) => ({ ...base, backgroundColor: '#2a2a2a', color: '#fff' }),
-              option: (base, state) => ({
-                ...base,
-                backgroundColor: state.isFocused ? '#ff4d4d' : '#2a2a2a',
-                color: state.isFocused ? '#fff' : '#f0f0f0',
-                cursor: 'pointer',
-              }),
-              input: (base) => ({ ...base, color: '#fff' }),
-              placeholder: (base) => ({ ...base, color: '#999' }),
-              dropdownIndicator: (base) => ({ ...base, color: '#ff4d4d' }),
-            }}
-          />
-        </div>
-
-        {selectedStock && !loading && (
-          <button className="analyze-btn" onClick={handleAnalyze}>
-            🔍 Analyze
-          </button>
-        )}
-
-        {selectedStock && (
-          <h2 className="news-heading">
-            📰 Analyzing News for: <span>{selectedStock.label}</span>
-            {loading && <span className="spinner" />}
-          </h2>
-        )}
-
-        {loading && <div className="loader">⏳ Live analysis in progress...</div>}
-
-        <div className="news-blocks">
-          {newsSummaries.map((news, idx) => {
-            const recommendationClass =
-              news.traderAdvice?.ifNotInPosition?.toLowerCase().includes('buy') ? 'buy' :
-              news.traderAdvice?.ifNotInPosition?.toLowerCase().includes('hold') ? 'hold' :
-              news.traderAdvice?.ifNotInPosition?.toLowerCase().includes('sell') ? 'sell' : '';
-
-            return (
-              <div key={idx} className={`news-card ${news.sentiment}`}>
-                <h3>{news.headline}</h3>
-                <p className="news-summary">{news.summary}</p>
-
-                {news.traderAdvice && (
-                  <div className="trader-advice">
-                    <strong>💡 Trader Advice:</strong>
-                    <ul>
-                      <li><b>If in position:</b> {news.traderAdvice.ifInPosition}</li>
-                      <li><b>If not in position:</b> {news.traderAdvice.ifNotInPosition}</li>
-                    </ul>
-                  </div>
-                )}
-
-                <div className="news-info-grid">
-                  <div>📌 Impact: {news.impact}</div>
-                  <div>📈 Direction: {news.direction}</div>
-                  <div>⏰ Time: {new Date(news.time).toLocaleString()}</div>
-                  <div>📡 Source: {news.source}</div>
-                </div>
-
-                {recommendationClass && (
-                  <div className={`stock-recommendation ${recommendationClass}`}>
-                    <h4>📌 Suggested Action:</h4>
-                    <p>Based on analysis: <strong>{recommendationClass.toUpperCase()}</strong></p>
-                  </div>
-                )}
-              </div>
-            );
-          })}
         </div>
       </div>
     </div>
   );
 };
 
-export default StockNewsAnalyzer;
+export default StockAnalysis;

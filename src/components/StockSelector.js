@@ -20,10 +20,7 @@ const StockNewsAnalyzer = () => {
       if (selectedStock) {
         const symbol = selectedStock.value?.toUpperCase();
         const keywords = selectedStock.keywords || [selectedStock.label];
-        if (!symbol) {
-          console.warn('⚠️ Missing stock symbol!');
-          return;
-        }
+        if (!symbol) { console.warn('⚠️ Missing stock symbol!'); return; }
         console.log('📤 Sending stock to backend:', { symbol, keywords });
         wsRef.current.send(JSON.stringify({ action: 'start', symbol, keywords }));
       } else {
@@ -43,10 +40,7 @@ const StockNewsAnalyzer = () => {
   };
 
   const handleAnalyze = () => {
-    if (!selectedStock) {
-      console.warn("⚠️ No stock selected when Analyze was clicked");
-      return;
-    }
+    if (!selectedStock) { console.warn("⚠️ No stock selected when Analyze was clicked"); return; }
     console.log("🔍 Analyze clicked for:", selectedStock.label);
     setLoading(true);
     setAnalysisResult(null);
@@ -57,61 +51,25 @@ const StockNewsAnalyzer = () => {
     console.log("⛔ Ending analysis");
     setLoading(false);
     setAnalysisResult(null);
-    if (wsRef.current) {
-      wsRef.current.close();
-      wsRef.current = null;
-    }
+    if (wsRef.current) { wsRef.current.close(); wsRef.current = null; }
   };
 
   useEffect(() => {
-    return () => {
-      if (wsRef.current) wsRef.current.close();
-    };
+    return () => { if (wsRef.current) wsRef.current.close(); };
   }, []);
 
-const getRecommendationClass = (traderAdvice) => {
-  if (!traderAdvice) return '';
+  const getRecommendationClass = (traderAdvice) => {
+    if (!traderAdvice) return '';
+    const adviceCombined = (
+      (traderAdvice.ifInPosition || '') + ' ' + (traderAdvice.ifNotInPosition || '')
+    ).toLowerCase();
+    if (adviceCombined.includes('sell') || adviceCombined.includes('exit') || adviceCombined.includes('reduce') || adviceCombined.includes('cut your position')) return 'sell';
+    if (adviceCombined.includes('wait') || adviceCombined.includes('hold') || adviceCombined.includes('caution') || adviceCombined.includes('cautious') || adviceCombined.includes('volatile') || adviceCombined.includes('uncertain') || adviceCombined.includes('monitor') || adviceCombined.includes('watch') || adviceCombined.includes('patience') || adviceCombined.includes('avoid')) return 'hold';
+    if (adviceCombined.includes('buy') || adviceCombined.includes('enter') || adviceCombined.includes('purchase') || adviceCombined.includes('opportunity') || adviceCombined.includes('accumulate') || adviceCombined.includes('add to')) return 'buy';
+    return '';
+  };
 
-  const adviceCombined = (
-    (traderAdvice.ifInPosition || '') + ' ' +
-    (traderAdvice.ifNotInPosition || '')
-  ).toLowerCase();
-
-  if (
-    adviceCombined.includes('sell') ||
-    adviceCombined.includes('exit') ||
-    adviceCombined.includes('reduce') ||
-    adviceCombined.includes('cut your position')
-  ) return 'sell';
-
-  if (
-    adviceCombined.includes('wait') ||
-    adviceCombined.includes('hold') ||
-    adviceCombined.includes('caution') ||
-    adviceCombined.includes('cautious') ||
-    adviceCombined.includes('volatile') ||
-    adviceCombined.includes('uncertain') ||
-    adviceCombined.includes('monitor') ||
-    adviceCombined.includes('watch') ||
-    adviceCombined.includes('patience') ||
-    adviceCombined.includes('avoid')
-  ) return 'hold';
-
-  if (
-    adviceCombined.includes('buy') ||
-    adviceCombined.includes('enter') ||
-    adviceCombined.includes('purchase') ||
-    adviceCombined.includes('opportunity') ||
-    adviceCombined.includes('accumulate') ||
-    adviceCombined.includes('add to')
-  ) return 'buy';
-
-  return '';
-};
-
-const recommendationClass = analysisResult
-  ? getRecommendationClass(analysisResult.traderAdvice)
-  : '';
+  const recommendationClass = analysisResult ? getRecommendationClass(analysisResult.traderAdvice) : '';
 
   return (
     <div className="center-wrapper">
@@ -124,48 +82,37 @@ const recommendationClass = analysisResult
           <button onClick={() => navigate("/stock-trends")}>Analyze Stock Trends</button>
         </div>
         <style>{`
-  .top-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    padding: 05px 30px;
-    background: linear-gradient(90deg, #0a0f1a, #313843ff, #444e62ff);
-    box-shadow: 0 4px 14px rgba(0,0,0,0.6);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
-  .brand-name {
-    font-size: 50px;
-    font-weight: 900;
-    background: linear-gradient(90deg, #ff6f3c, #ff3e3e);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: 2px;
-    text-shadow: 0 3px 8px rgba(0,0,0,0.8);
-  }
-  .top-buttons { display: flex; gap: 20px; }
-  .top-buttons button {
-    padding: 10px 24px;
-    border-radius: 8px;
-    border: 1px solid rgba(255,255,255,0.2);
-    cursor: pointer;
-    font-size: 15px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    background: linear-gradient(135deg, #1e293b, #111827);
-    color: #f9fafb;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.6);
-  }
-  .top-buttons button:hover {
-    background: linear-gradient(135deg, #374151, #1f2937);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.7);
-  }
-  @media (max-width: 768px) {
-    .top-bar { flex-direction: column; align-items: flex-start; padding: 16px 20px; }
-    .top-buttons { margin-top: 14px; width: 100%; justify-content: space-between; }
-    .top-buttons button { flex: 1; text-align: center; }
-  }
-`}</style>
+          .top-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            width: 100%; padding: 5px 30px;
+            background: linear-gradient(90deg, #0a0f1a, #313843ff, #444e62ff);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.6);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          }
+          .brand-name {
+            font-size: 50px; font-weight: 900;
+            background: linear-gradient(90deg, #ff6f3c, #ff3e3e);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+          }
+          .top-buttons { display: flex; gap: 20px; }
+          .top-buttons button {
+            padding: 10px 24px; border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.2); cursor: pointer;
+            font-size: 15px; font-weight: 600; transition: all 0.3s ease;
+            background: linear-gradient(135deg, #1e293b, #111827);
+            color: #f9fafb; box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+          }
+          .top-buttons button:hover {
+            background: linear-gradient(135deg, #374151, #1f2937);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.7);
+          }
+          @media (max-width: 768px) {
+            .top-bar { flex-direction: column; align-items: flex-start; padding: 16px 20px; }
+            .top-buttons { margin-top: 14px; width: 100%; justify-content: space-between; }
+            .top-buttons button { flex: 1; text-align: center; }
+          }
+        `}</style>
       </div>
 
       <div className="analyzer-container">
@@ -215,6 +162,28 @@ const recommendationClass = analysisResult
           />
         </div>
 
+        {/* ── EMPTY STATE ── */}
+        {!selectedStock && !loading && !analysisResult && (
+          <div className="empty-state">
+            <div className="empty-state-icon">📡</div>
+            <p className="empty-state-title">No asset selected yet</p>
+            <p className="empty-state-subtitle">
+              Pick a stock, crypto, or index above and let AI scan the latest news for trading signals.
+            </p>
+            <div className="empty-state-steps">
+              <div className="empty-step">
+                <span className="empty-step-num">1</span> Select an asset
+              </div>
+              <div className="empty-step">
+                <span className="empty-step-num">2</span> Click Analyze
+              </div>
+              <div className="empty-step">
+                <span className="empty-step-num">3</span> Get AI insights
+              </div>
+            </div>
+          </div>
+        )}
+
         {selectedStock && !loading && (
           <button className="analyze-btn" onClick={handleAnalyze}>
             🔍 Analyze
@@ -230,7 +199,7 @@ const recommendationClass = analysisResult
 
         {loading && <div className="loader">⏳ Live analysis in progress...</div>}
 
-        {/* Single result card */}
+        {/* Result card */}
         {analysisResult && (
           <div className="news-blocks">
             <div className={`news-card ${analysisResult.sentiment}`}>

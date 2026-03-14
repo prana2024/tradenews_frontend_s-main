@@ -131,6 +131,7 @@
   /* adjust height to stay above input bar */
   flex-grow: 0;
   padding: 15px;
+  margin-bottom: 50px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;

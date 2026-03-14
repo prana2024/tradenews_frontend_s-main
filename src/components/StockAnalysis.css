@@ -3,22 +3,25 @@
 .stock-analysis-container input,
 .stock-analysis-container textarea {
   width: 90%;
-  /* takes most of the container width */
   max-width: 900px;
-  /* match container max width */
   padding: 20px 24px;
-  /* larger padding for comfort */
   font-size: 24px;
-  /* bigger, readable text */
   border-radius: 16px;
-  border: 1px solid #444;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   margin-bottom: 32px;
-  /* more spacing between elements */
-  background-color: #222;
+  background-color: rgba(255, 255, 255, 0.05);
   color: #f9fafb;
   box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
 }
 
+.stock-analysis-container select:focus,
+.stock-analysis-container input:focus,
+.stock-analysis-container textarea:focus {
+  border-color: #ff5a36;
+  box-shadow: 0 0 0 3px rgba(255, 90, 54, 0.15);
+}
 
 .stock-analysis-page {
   display: flex;
@@ -40,12 +43,14 @@
   width: 100%;
   max-width: 1000px;
   padding: 80px 50px;
-  background: rgba(30, 30, 30, 0.85);
-  backdrop-filter: blur(5px);
+  background: rgba(15, 18, 28, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-radius: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
   color: #f9fafb;
   text-align: center;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 90, 54, 0.06);
   transition: all 0.3s ease;
 }
 
@@ -54,11 +59,15 @@
   font-size: 52px;
   margin-bottom: 36px;
   font-weight: 800;
-  text-shadow: 0 6px 16px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 6px 24px rgba(0, 0, 0, 0.9);
   line-height: 1.2;
+  background: linear-gradient(135deg, #f9fafb 40%, rgba(255, 90, 54, 0.85) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-/* Select/Input inside container */
+/* Select/Input inside container (overrides first block) */
 .stock-analysis-container select,
 .stock-analysis-container input,
 .stock-analysis-container textarea {
@@ -67,10 +76,12 @@
   padding: 16px 20px;
   font-size: 20px;
   border-radius: 12px;
-  border: 1px solid #444;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   margin-bottom: 24px;
-  background-color: #222;
+  background-color: rgba(255, 255, 255, 0.05);
   color: #f9fafb;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* Buttons Section */
@@ -86,48 +97,87 @@
 .stock-buttons-section button {
   padding: 20px 40px;
   font-size: 22px;
-  /* bigger button text */
   border-radius: 18px;
   border: none;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
-  background-color: #222;
-  color: #f9fafb;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+  transition: all 0.25s ease;
+  background: linear-gradient(135deg, #ff5a36, #e03e1e);
+  color: #fff;
+  box-shadow: 0 6px 20px rgba(255, 90, 54, 0.4);
+  letter-spacing: 0.3px;
 }
 
 .stock-buttons-section button:hover {
-  opacity: 0.85;
   transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(255, 90, 54, 0.55);
+}
+
+.stock-buttons-section button:active {
+  transform: translateY(0);
+}
+
+.stock-buttons-section button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .stock-buttons-section .end-btn {
-  background-color: #ff4d4d;
-  color: #fff;
+  background: rgba(255, 77, 77, 0.1);
+  color: #ff4d4d;
+  border: 1px solid rgba(255, 77, 77, 0.3);
+  box-shadow: none;
 }
 
-/* Analysis Result */
+.stock-buttons-section .end-btn:hover {
+  background: rgba(255, 77, 77, 0.2);
+  box-shadow: 0 6px 20px rgba(255, 77, 77, 0.25);
+}
+
 /* Analysis Result */
 .stock-analysis-result {
   width: 100%;
   max-width: 800px;
   margin-top: 40px;
-  padding: 16px;
-  background-color: rgba(30, 30, 30, 0.7);
+  padding: 28px 32px;
+  background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: 24px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
   text-align: left;
-  color: #fff;
+  color: #f0ede8;
   word-wrap: break-word;
-  font-size: 22px;
+  font-size: 18px;
   line-height: 2;
 
-  max-height: 500px;
-  /* limit height */
+  /* THE FIX */
+  max-height: 420px;
+  height: 420px;
+  overflow: hidden;
   overflow-y: auto;
-  /* adds vertical scrollbar if content is too long */
-  padding-right: 12px;
-  /* optional: space for scrollbar */
+  box-sizing: border-box;
+
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 90, 54, 0.4) transparent;
+}
+
+.stock-analysis-result::-webkit-scrollbar {
+  width: 5px;
+}
+
+.stock-analysis-result::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.stock-analysis-result::-webkit-scrollbar-thumb {
+  background: rgba(255, 90, 54, 0.4);
+  border-radius: 99px;
+}
+
+.stock-analysis-result::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 90, 54, 0.7);
 }

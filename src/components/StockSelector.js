@@ -13,7 +13,10 @@ const StockNewsAnalyzer = () => {
 
   const startWebSocket = () => {
     console.log("🔌 Attempting to connect WebSocket...");
-    wsRef.current = new WebSocket('ws://127.0.0.1:8000/ws/news/');
+   const WS_URL =
+  process.env.REACT_APP_WS_URL || "ws://127.0.0.1:8000";
+
+wsRef.current = new WebSocket(`${WS_URL}/ws/news/`);
 
     wsRef.current.onopen = () => {
       console.log('✅ WebSocket connected');

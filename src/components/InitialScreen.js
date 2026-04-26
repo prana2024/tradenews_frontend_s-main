@@ -93,6 +93,17 @@ const InitialScreen = ({ onContinue }) => {
           <button onClick={handleChat}>FinAI Assistant</button>
           <button onClick={handleAnalyzeStock}>Analyze Stock Trends</button>
         </div>
+        {/* Mobile hamburger menu */}
+        <div className="mobile-menu">
+          <button className="hamburger-btn" onClick={() => setIsMenuOpen(!isMenuOpen)}>☰</button>
+          {isMenuOpen && (
+            <div className="mobile-dropdown">
+              <button onClick={() => { handleAnalyzeNews(); setIsMenuOpen(false); }}>📰 Analyse News</button>
+              <button onClick={() => { handleChat(); setIsMenuOpen(false); }}>🤖 FinAI Assistant</button>
+              <button onClick={() => { handleAnalyzeStock(); setIsMenuOpen(false); }}>📈 Stock Trends</button>
+            </div>
+          )}
+        </div>
       </div>
 
       <style>{`
@@ -101,7 +112,7 @@ const InitialScreen = ({ onContinue }) => {
           align-items: center;
           justify-content: space-between;
           width: 100%;
-          padding: 05px 30px;
+          padding: 5px 30px;
           background: linear-gradient(90deg, #0a0f1a, #313843ff, #444e62ff);
           box-shadow: 0 4px 14px rgba(0,0,0,0.6);
           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -136,7 +147,51 @@ const InitialScreen = ({ onContinue }) => {
           box-shadow: 0 4px 12px rgba(0,0,0,0.7);
         }
 
-        /* ✅ Loading bubble styles */
+        /* Mobile menu — hidden on desktop */
+        .mobile-menu { display: none; position: relative; }
+
+        .hamburger-btn {
+          background: none;
+          border: 1px solid rgba(255,255,255,0.2);
+          color: #f9fafb;
+          font-size: 22px;
+          padding: 4px 10px;
+          border-radius: 8px;
+          cursor: pointer;
+        }
+
+        .mobile-dropdown {
+          position: absolute;
+          top: 110%;
+          right: 0;
+          background: linear-gradient(135deg, #1e293b, #111827);
+          border: 1px solid rgba(255,255,255,0.15);
+          border-radius: 10px;
+          overflow: hidden;
+          z-index: 200;
+          min-width: 180px;
+          box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+        }
+
+        .mobile-dropdown button {
+          display: block;
+          width: 100%;
+          padding: 12px 16px;
+          background: none;
+          border: none;
+          color: #f9fafb;
+          font-size: 14px;
+          font-weight: 600;
+          text-align: left;
+          cursor: pointer;
+          border-bottom: 1px solid rgba(255,255,255,0.08);
+          transition: background 0.2s ease;
+        }
+
+        .mobile-dropdown button:last-child { border-bottom: none; }
+        .mobile-dropdown button:hover { background: rgba(255,255,255,0.08); }
+
+        /* Loading bubble */
         .loading-bubble {
           display: flex;
           align-items: center;
@@ -164,21 +219,18 @@ const InitialScreen = ({ onContinue }) => {
           40%            { transform: scale(1.2); opacity: 1; }
         }
 
-        @media (max-width: 768px) {
-          .top-bar {
-            flex-direction: column;
-            align-items: flex-start;
-            padding: 16px 20px;
-          }
-          .top-buttons {
-            margin-top: 14px;
-            width: 100%;
-            justify-content: space-between;
-          }
-          .top-buttons button {
-            flex: 1;
-            text-align: center;
-          }
+        /* Tablet */
+        @media (max-width: 900px) {
+          .top-buttons { display: none; }
+          .mobile-menu { display: block; }
+          .brand-name { font-size: 30px; }
+          .top-bar { padding: 8px 16px; }
+        }
+
+        /* Mobile */
+        @media (max-width: 500px) {
+          .brand-name { font-size: 22px; }
+          .top-bar { padding: 6px 12px; }
         }
       `}</style>
 
@@ -194,11 +246,9 @@ const InitialScreen = ({ onContinue }) => {
                 className={msg.sender === "User" ? "user-message" : "ai-message"}
               >
                 {msg.text}
-                {/* ✅ No loading logic inside here — old messages stay clean */}
               </div>
             ))}
 
-            {/* ✅ Separate loading bubble — only appears when waiting for response */}
             {isLoading && (
               <div className="loading-bubble">
                 <span></span>

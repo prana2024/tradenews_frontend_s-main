@@ -2,21 +2,15 @@
 .initial-screen {
   display: flex;
   justify-content: center;
-  /* center horizontally */
   align-items: center;
-  /* center vertically */
   min-height: 100vh;
   background: transparent;
-  /* make background fully transparent */
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   padding: 20px;
   box-sizing: border-box;
 }
 
-
 /* -------------------- Top Bar -------------------- */
-
-
 .brand-name {
   font-size: 26px;
   font-weight: 700;
@@ -104,7 +98,6 @@
   background-color: #333;
 }
 
-/* -------------------- Chat container width  -------------------- */
 /* -------------------- Top Bar -------------------- */
 .top-bar {
   display: flex;
@@ -116,8 +109,7 @@
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 1000px;
-  /* increased width */
+  width: min(1000px, 100%);
   z-index: 100;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
   border-bottom: 2px solid #333;
@@ -126,20 +118,17 @@
 
 /* -------------------- Chat Area -------------------- */
 .chat-area {
-  width: 1000px;
+  width: min(1000px, 100%);
   height: calc(700px - 85px);
-  /* adjust height to stay above input b */
   flex-grow: 0;
   padding: 15px;
   margin-bottom: 50px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-
   background-color: rgba(15, 15, 15, 0.5);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
-
   border: 2px solid #333;
   border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
@@ -147,36 +136,11 @@
   margin-top: 20px;
 }
 
-/* Custom scrollbar for chat area */
-.chat-area::-webkit-scrollbar {
-  width: 10px;
-  /* scrollbar width */
-}
-
-.chat-area::-webkit-scrollbar-track {
-  background: rgba(27, 27, 27, 0.5);
-  /* track color, matches background */
-  border-radius: 10px;
-}
-
-.chat-area::-webkit-scrollbar-thumb {
-  background: #555;
-  /* thumb color, dark gray */
-  border-radius: 10px;
-}
-
-.chat-area::-webkit-scrollbar-thumb:hover {
-  background: #777;
-  /* slightly lighter on hover */
-}
-
-/* For Firefox */
-.chat-area {
-  scrollbar-width: thin;
-  scrollbar-color: #555 rgba(27, 27, 27, 0.5);
-}
-
-
+.chat-area::-webkit-scrollbar { width: 10px; }
+.chat-area::-webkit-scrollbar-track { background: rgba(27,27,27,0.5); border-radius: 10px; }
+.chat-area::-webkit-scrollbar-thumb { background: #555; border-radius: 10px; }
+.chat-area::-webkit-scrollbar-thumb:hover { background: #777; }
+.chat-area { scrollbar-width: thin; scrollbar-color: #555 rgba(27,27,27,0.5); }
 
 /* -------------------- Input Bar -------------------- */
 .input-barinput-bar {
@@ -185,7 +149,7 @@
   background-color: rgba(27, 27, 27, 0.95);
   padding: 12px 20px;
   border-radius: 30px;
-  width: 1000px;
+  width: min(1000px, calc(100% - 40px));
   position: absolute;
   bottom: 15px;
   left: 50%;
@@ -194,7 +158,6 @@
   border: 2px solid #333;
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
 }
-
 
 /* -------------------- Chat Bubbles -------------------- */
 .ai-message {
@@ -223,19 +186,11 @@
 }
 
 .ai-message:hover,
-.user-message:hover {
-  transform: scale(1.02);
-}
+.user-message:hover { transform: scale(1.02); }
 
-.loading {
-  margin-left: 5px;
-  font-size: 16px;
-  color: #00FFAA;
-}
+.loading { margin-left: 5px; font-size: 16px; color: #00FFAA; }
 
-/* -------------------- Footer / Input Bar -------------------- */
-
-
+/* -------------------- Input Bar internals -------------------- */
 .input-barinput-bar input {
   flex: 1;
   background-color: #111;
@@ -259,26 +214,14 @@
   transition: background 0.2s ease, transform 0.2s ease;
 }
 
-.input-barinput-bar button:hover {
-  background-color: #66FFCC;
-  transform: scale(1.1);
-}
-
-.input-barinput-bar button:first-child {
-  background-color: #FF5252;
-}
-
-.input-barinput-bar button:first-child:hover {
-  background-color: #FF8A80;
-}
+.input-barinput-bar button:hover { background-color: #66FFCC; transform: scale(1.1); }
+.input-barinput-bar button:first-child { background-color: #FF5252; }
+.input-barinput-bar button:first-child:hover { background-color: #FF8A80; }
 
 /* -------------------- Modal -------------------- */
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background-color: rgba(0, 0, 0, 0.85);
   display: flex;
   justify-content: center;
@@ -301,11 +244,7 @@
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
 }
 
-.modal p {
-  color: #00FFAA;
-  font-size: 18px;
-  margin-bottom: 25px;
-}
+.modal p { color: #00FFAA; font-size: 18px; margin-bottom: 25px; }
 
 .modal button {
   background-color: #00FFAA;
@@ -318,7 +257,33 @@
   transition: background 0.2s ease, transform 0.2s ease;
 }
 
-.modal button:hover {
-  background-color: #66FFCC;
-  transform: scale(1.05);
+.modal button:hover { background-color: #66FFCC; transform: scale(1.05); }
+
+/* ==================== TABLET (≤ 900px) ==================== */
+@media (max-width: 900px) {
+  .top-bar {
+    width: 100%;
+    left: 0;
+    transform: none;
+    border-radius: 0;
+    padding: 8px 16px;
+  }
+  .chat-area {
+    width: 100%;
+    height: calc(100dvh - 130px);
+    margin-top: 10px;
+    border-radius: 12px;
+  }
+  .input-barinput-bar { width: calc(100% - 24px); }
+  .ai-message, .user-message { max-width: 88%; }
+}
+
+/* ==================== MOBILE (≤ 500px) ==================== */
+@media (max-width: 500px) {
+  .top-bar { padding: 6px 12px; }
+  .chat-area { height: calc(100dvh - 120px); }
+  .input-barinput-bar { width: calc(100% - 16px); bottom: 8px; }
+  .input-barinput-bar input { height: 42px; font-size: 14px; }
+  .modal { width: 90%; padding: 20px 18px; }
+  .modal p { font-size: 15px; }
 }

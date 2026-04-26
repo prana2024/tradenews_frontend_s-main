@@ -12,7 +12,10 @@ const StockAnalysis = () => {
   const wsRef = useRef(null);
 
   const startWebSocket = () => {
-    wsRef.current = new WebSocket("ws://127.0.0.1:8000/ws/stock-analysis/");
+   const WS_URL =
+  process.env.REACT_APP_WS_URL || "ws://127.0.0.1:8000";
+
+wsRef.current = new WebSocket(`${WS_URL}/ws/stock-analysis/`);
 
     wsRef.current.onopen = () => {
       if (selectedStock) {

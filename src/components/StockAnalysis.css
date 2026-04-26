@@ -153,31 +153,110 @@
   word-wrap: break-word;
   font-size: 18px;
   line-height: 2;
-
-  /* THE FIX */
   max-height: 420px;
   height: 420px;
   overflow: hidden;
   overflow-y: auto;
   box-sizing: border-box;
-
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 90, 54, 0.4) transparent;
 }
 
-.stock-analysis-result::-webkit-scrollbar {
-  width: 5px;
-}
-
-.stock-analysis-result::-webkit-scrollbar-track {
-  background: transparent;
-}
-
+.stock-analysis-result::-webkit-scrollbar { width: 5px; }
+.stock-analysis-result::-webkit-scrollbar-track { background: transparent; }
 .stock-analysis-result::-webkit-scrollbar-thumb {
   background: rgba(255, 90, 54, 0.4);
   border-radius: 99px;
 }
-
 .stock-analysis-result::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 90, 54, 0.7);
+}
+
+/* ==================== TABLET (≤ 768px) ==================== */
+/* ==================== TABLET (≤ 768px) ==================== */
+@media (max-width: 768px) {
+  .stock-analysis-page {
+    padding: 10px;
+    align-items: flex-start;
+    padding-top: 90px; /* pushes content below fixed header */
+  }
+
+  .stock-analysis-container {
+    padding: 30px 20px;
+    border-radius: 20px;
+    width: 100%;
+    box-sizing: border-box; /* prevents right overflow */
+  }
+
+  .stock-analysis-container h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+  }
+
+  .stock-selector-section {
+    width: 100%;
+  }
+
+  .stock-buttons-section {
+    margin-top: 20px;
+    gap: 12px;
+  }
+
+  .stock-buttons-section button {
+    padding: 14px 24px;
+    font-size: 16px;
+    border-radius: 12px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .stock-analysis-result {
+    width: 100%;
+    max-width: 100%;
+    font-size: 14px;
+    line-height: 1.7;
+    padding: 18px 16px;
+    height: auto;
+    max-height: 350px;
+    border-radius: 16px;
+    margin-top: 24px;
+    box-sizing: border-box;
+  }
+
+  .stock-analysis-result p {
+    margin-bottom: 12px;
+    word-break: break-word;
+  }
+}
+
+/* ==================== MOBILE (≤ 500px) ==================== */
+@media (max-width: 500px) {
+  .stock-analysis-page {
+    padding: 8px;
+    padding-top: 80px; /* pushes content below fixed header */
+  }
+
+  .stock-analysis-container {
+    padding: 24px 14px;
+    border-radius: 16px;
+    box-sizing: border-box;
+  }
+
+  .stock-analysis-container h2 {
+    font-size: 26px;
+    margin-bottom: 16px;
+  }
+
+  .stock-buttons-section button {
+    padding: 12px 20px;
+    font-size: 15px;
+    box-sizing: border-box;
+  }
+
+  .stock-analysis-result {
+    font-size: 13px;
+    line-height: 1.6;
+    padding: 14px 12px;
+    max-height: 300px;
+  }
 }

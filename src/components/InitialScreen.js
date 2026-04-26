@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import "./InitialScreen.css";
 import { useNavigate } from "react-router-dom";
 
-
 const InitialScreen = ({ onContinue }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -11,13 +10,8 @@ const InitialScreen = ({ onContinue }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
+  const chatAreaRef = useRef(null);
 
-
-  const chatAreaRef = useRef(null); // 🔹 Reference to chat area for auto-scroll
-
-
-
-  // 🔹 Load saved messages
   useEffect(() => {
     const stored = localStorage.getItem("messages");
     if (stored) {
@@ -26,36 +20,22 @@ const InitialScreen = ({ onContinue }) => {
     }
   }, []);
 
-  // 🔹 Auto-scroll whenever messages change
   useEffect(() => {
     if (chatAreaRef.current) {
       chatAreaRef.current.scrollTop = chatAreaRef.current.scrollHeight;
     }
   }, [messages, isLoading]);
 
-
   const navigate = useNavigate();
 
-  // 🔹 Handlers for top bar navigation
-  const handleAnalyzeNews = () => {
-    navigate("/analyzer"); // StockNewsAnalyzer page
-  };
-
-  const handleChat = () => {
-    navigate("/"); // Current InitialScreen page or your chat page
-  };
-
-  const handleAnalyzeStock = () => {
-    navigate("/stock-trends"); // StockAnalysis page
-  };
-
-
+  const handleAnalyzeNews = () => navigate("/analyzer");
+  const handleChat = () => navigate("/");
+  const handleAnalyzeStock = () => navigate("/stock-trends");
 
   const handleSendMessage = async () => {
     if (!input.trim()) return;
 
     if (showInitialMessage) {
-      setMessages([{ id: "1", text: "Hello! How can I help you today?", sender: "AI" }]);
       setShowInitialMessage(false);
     }
 
@@ -65,7 +45,6 @@ const InitialScreen = ({ onContinue }) => {
     setInput("");
     localStorage.setItem("messages", JSON.stringify(updated));
 
-    // Send to backend
     const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://127.0.0.1:8000";
     const payload = { message: input, role: "Friend", character: "Funny" };
     setIsLoading(true);
@@ -95,8 +74,8 @@ const InitialScreen = ({ onContinue }) => {
   };
 
   const handleClearChat = () => {
-    const starter = [{ id: "1", text: "Hello! How can I help you today?", sender: "AI" }];
-    setMessages(starter);
+    setMessages([]);
+    setShowInitialMessage(true);
     localStorage.removeItem("messages");
   };
 
@@ -104,13 +83,11 @@ const InitialScreen = ({ onContinue }) => {
     setShowLoginModal(true);
   };
 
-  // 🔹 UI
   return (
     <div className="initial-screen">
-      {/* 🔹 Top Bar */}
+      {/* Top Bar */}
       <div className="top-bar">
         <h1 className="brand-name">News2Trade</h1>
-
         <div className="top-buttons">
           <button onClick={handleAnalyzeNews}>Analyse News with AI</button>
           <button onClick={handleChat}>FinAI Assistant</button>
@@ -118,92 +95,122 @@ const InitialScreen = ({ onContinue }) => {
         </div>
       </div>
 
-      {/* 🔹 Inline CSS */}
-      <style>
-        {`
-  .top-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    padding: 05px 30px;
-    background: linear-gradient(90deg, #0a0f1a, #313843ff, #444e62ff); /* subtle dark gradient for stock theme */
-    box-shadow: 0 4px 14px rgba(0,0,0,0.6);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
+      <style>{`
+        .top-bar {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          width: 100%;
+          padding: 05px 30px;
+          background: linear-gradient(90deg, #0a0f1a, #313843ff, #444e62ff);
+          box-shadow: 0 4px 14px rgba(0,0,0,0.6);
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .brand-name {
+          font-size: 50px;
+          font-weight: 900;
+          background: linear-gradient(90deg, #ff6f3c, #ff3e3e);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          letter-spacing: 2px;
+          text-shadow: 0 3px 8px rgba(0,0,0,0.8);
+        }
+        .top-buttons {
+          display: flex;
+          gap: 20px;
+        }
+        .top-buttons button {
+          padding: 10px 24px;
+          border-radius: 8px;
+          border: 1px solid rgba(255,255,255,0.2);
+          cursor: pointer;
+          font-size: 15px;
+          font-weight: 600;
+          transition: all 0.3s ease;
+          background: linear-gradient(135deg, #1e293b, #111827);
+          color: #f9fafb;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+        }
+        .top-buttons button:hover {
+          background: linear-gradient(135deg, #374151, #1f2937);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.7);
+        }
 
-  .brand-name {
-    font-size: 50px; /* increased size */
-    font-weight: 900;
-    background: linear-gradient(90deg, #ff6f3c, #ff3e3e); /* warm gradient to stand out */
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: 2px;
-    text-shadow: 0 3px 8px rgba(0,0,0,0.8); /* glow for prominence */
-  }
+        /* ✅ Loading bubble styles */
+        .loading-bubble {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 10px 16px;
+          background: #1e293b;
+          border-radius: 18px 18px 18px 4px;
+          width: fit-content;
+          max-width: 80px;
+          margin: 6px 0;
+        }
+        .loading-bubble span {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background-color: #94a3b8;
+          animation: bounce 1.2s infinite ease-in-out;
+        }
+        .loading-bubble span:nth-child(1) { animation-delay: 0s; }
+        .loading-bubble span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-bubble span:nth-child(3) { animation-delay: 0.4s; }
 
-  .top-buttons {
-    display: flex;
-    gap: 20px;
-  }
+        @keyframes bounce {
+          0%, 80%, 100% { transform: scale(0.7); opacity: 0.5; }
+          40%            { transform: scale(1.2); opacity: 1; }
+        }
 
-  .top-buttons button {
-    padding: 10px 24px;
-    border-radius: 8px;
-    border: 1px solid rgba(255,255,255,0.2);
-    cursor: pointer;
-    font-size: 15px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    background: linear-gradient(135deg, #1e293b, #111827); /* muted dark gradient */
-    color: #f9fafb; 
-    box-shadow: 0 2px 8px rgba(0,0,0,0.6);
-  }
+        @media (max-width: 768px) {
+          .top-bar {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 16px 20px;
+          }
+          .top-buttons {
+            margin-top: 14px;
+            width: 100%;
+            justify-content: space-between;
+          }
+          .top-buttons button {
+            flex: 1;
+            text-align: center;
+          }
+        }
+      `}</style>
 
-  .top-buttons button:hover {
-    background: linear-gradient(135deg, #374151, #1f2937); /* subtle hover */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.7);
-  }
-
-  @media (max-width: 768px) {
-    .top-bar {
-      flex-direction: column;
-      align-items: flex-start;
-      padding: 16px 20px;
-    }
-    .top-buttons {
-      margin-top: 14px;
-      width: 100%;
-      justify-content: space-between;
-    }
-    .top-buttons button {
-      flex: 1;
-      text-align: center;
-    }
-  }
-`}
-      </style>
-
-
-
-      {/* 🔹 Chat */}
+      {/* Chat Area */}
       <div className="chat-area" ref={chatAreaRef}>
         {showInitialMessage ? (
           <p className="ai-message">Hello! How can I help you today?</p>
         ) : (
-          messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={msg.sender === "User" ? "user-message" : "ai-message"}
-            >
-              {msg.text}
-              {msg.sender === "AI" && isLoading && <span className="loading">...</span>}
-            </div>
-          ))
+          <>
+            {messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={msg.sender === "User" ? "user-message" : "ai-message"}
+              >
+                {msg.text}
+                {/* ✅ No loading logic inside here — old messages stay clean */}
+              </div>
+            ))}
+
+            {/* ✅ Separate loading bubble — only appears when waiting for response */}
+            {isLoading && (
+              <div className="loading-bubble">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            )}
+          </>
         )}
       </div>
 
-      {/* 🔹 Bottom Input */}
+      {/* Bottom Input */}
       <div className="input-barinput-bar">
         <button onClick={handleClearChat}>✖</button>
         <input
@@ -216,7 +223,7 @@ const InitialScreen = ({ onContinue }) => {
         <button onClick={handleSendMessage}>➤</button>
       </div>
 
-      {/* 🔹 Login Modal */}
+      {/* Login Modal */}
       {showLoginModal && (
         <div className="modal-overlay" onClick={() => setShowLoginModal(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>

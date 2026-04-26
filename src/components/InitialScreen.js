@@ -45,7 +45,7 @@ const InitialScreen = ({ onContinue }) => {
     setInput("");
     localStorage.setItem("messages", JSON.stringify(updated));
 
-    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://127.0.0.1:8000";
+    const BACKEND_URL = "https://tradenews-backend-eg2k.onrender.com";
     const payload = { message: input, role: "Friend", character: "Funny" };
     setIsLoading(true);
 
